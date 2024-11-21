@@ -4,3 +4,5 @@
 .env
 ollama-data
 minio-data
+__pycache__
+*.pdf
