@@ -1,0 +1,39 @@
+x-project:
+  name: three-doc-local
+
+services:
+  tdl-ollama:
+    image: ollama/ollama
+    ports:
+      - "11411:11411"
+    volumes:
+      - "./ollama-data:/root/.ollama"
+
+  tdl-minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - "./minio-data:/var/lib/minio/data"
+
+  tdl-api:
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile.api.yml
+    ports:
+      - "5000:5000"
+    environment:
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - OLLAMA_API_URL=http://tdl-ollama:11411
+      - OLLAMA_API_KEY=llama3
+    depends_on:
+      - tdl-minio
+      - tdl-ollama
+    volumes:
+      - ../api:/app
