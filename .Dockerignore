@@ -2,3 +2,6 @@ logs/
 .git
 *.md
 .cache
+.env
+__pycache__
+*.pdf
