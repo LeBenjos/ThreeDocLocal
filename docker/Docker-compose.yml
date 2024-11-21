@@ -28,6 +28,7 @@ services:
     ports:
       - "5000:5000"
     environment:
+      - MINIO_URL=tdl-minio:9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
       - OLLAMA_API_URL=http://tdl-ollama:11411
