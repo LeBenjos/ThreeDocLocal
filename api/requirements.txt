@@ -1,2 +1,3 @@
 minio
 python-dotenv
+PyPDF2
