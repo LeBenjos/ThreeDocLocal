@@ -2,6 +2,7 @@ from minio import Minio
 from minio.error import S3Error
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
+import re
 import os
 
 load_dotenv()
@@ -58,10 +59,24 @@ class MinioClient:
                     else:
                         print(f"Attention : Impossible d'extraire le texte de la page {i}.")
 
-                text = text.strip()
+                text = re.sub(r'\s+', ' ', text).strip()
+                sentences = re.split(r'(?<=[.!?]) +', text)
+                chunks = []
+                current_chunk = ""
+
+                for sentence in sentences:
+                    if len(current_chunk) + len(sentence) + 1 < 1000: 
+                        current_chunk += (sentence + " ").strip()
+                    else:
+                        chunks.append(current_chunk)
+                        current_chunk = sentence + " "
+
+                if current_chunk:
+                    chunks.append(current_chunk)
 
                 with open(local_txt_path, 'w', encoding='utf-8') as txt_file:
-                    txt_file.write(text)
+                    for chunk in chunks:
+                        txt_file.write(chunk.strip() + "\n")
 
             print(f"Conversion réussie : {local_pdf_path} -> {local_txt_path}")
         except FileNotFoundError as fnf_error:
