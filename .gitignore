@@ -6,5 +6,4 @@ ollama-data
 minio-data
 __pycache__
 venv
-*.pdf
 *.txt

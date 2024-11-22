@@ -117,8 +117,9 @@ def ollama_chat(user_input: str, system_message: str, vault_embeddings: torch.Te
 
 if __name__ == "__main__":
     print_colored_message(COMMAND_COLOR, "Parsing command-line arguments...")
-    parser = argparse.ArgumentParser(description="Ollama Chat")
+    parser = argparse.ArgumentParser(description="Ollama Chat with RAG and non-RAG options")
     parser.add_argument("--model", default="llama3.2:1b", help="Ollama model to use (default: llama3.2:1b)")
+    parser.add_argument("--temperature", type=float, default=0.7, help="Set the temperature for responses (default: 0.7)")
     args = parser.parse_args()
 
     print_colored_message(COMMAND_COLOR, "Initializing Ollama API client...")
@@ -148,5 +149,35 @@ if __name__ == "__main__":
             print_colored_message(COMMAND_COLOR, "Exiting the conversation loop.")
             break
 
-        response = ollama_chat(user_input, system_message, vault_embeddings, vault_content, args.model, conversation_history)
-        print_colored_message(LLAMA_CHAT_COLOR, f"Response: \n\n{response}")
+        print_colored_message(COMMAND_COLOR, "Choose response mode: 1 for Non-RAG, 2 for RAG")
+        mode = input(USER_CHAT_COLOR + "Enter mode (1 or 2): " + RESET_COLOR).strip()
+
+        if mode == '1':
+            print_colored_message(COMMAND_COLOR, "Generating response WITHOUT RAG...")
+            messages = [{"role": "system", "content": system_message}, {"role": "user", "content": user_input}]
+            try:
+                response = client.chat.completions.create(
+                    model=args.model,
+                    messages=messages,
+                    max_tokens=2000,
+                    temperature=args.temperature,
+                )
+                assistant_response = response.choices[0].message.content
+                print_colored_message(LLAMA_CHAT_COLOR, f"Response (Non-RAG): \n\n{assistant_response}")
+            except Exception as e:
+                print_colored_message(ERROR_COLOR, f"Error generating Non-RAG response: {e}")
+
+        elif mode == '2':
+            print_colored_message(COMMAND_COLOR, "Generating response WITH RAG...")
+            response = ollama_chat(
+                user_input=user_input,
+                system_message=system_message,
+                vault_embeddings=vault_embeddings,
+                vault_content=vault_content,
+                ollama_model=args.model,
+                conversation_history=conversation_history
+            )
+            print_colored_message(LLAMA_CHAT_COLOR, f"Response (RAG): \n\n{response}")
+
+        else:
+            print_colored_message(ERROR_COLOR, "Invalid mode. Please choose either 1 or 2.")
