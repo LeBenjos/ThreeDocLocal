@@ -1,5 +1,11 @@
 # 📄 ThreeDocLocal by Benjamin SCHINKEL
 
+Cours projet visant à intégrer un système RAG (Retrieval-Augmented Generation) avec un LLM spécialisé dans la documentation de Three.js.
+
+**Fonctionnalités principales :**
+- Possibilité de poser des questions avec ou sans le système RAG. ✅
+- Possibilité d'ajuster la température pour personnaliser la génération des réponses. ✅
+
 ## 🚀 Lancer le projet
 
 ### 🐳 Docker
