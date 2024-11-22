@@ -1,3 +1,5 @@
 minio
 python-dotenv
 PyPDF2
+OpenAI
+ollama

@@ -35,6 +35,8 @@ class MinioClient:
 
         self.remove_file(pdf_file_path)
 
+        return txt_file_path
+
     def download_rag(self, bucket_name, rag_name, local_file_path):
         try:
             self.client.fget_object(bucket_name, rag_name, local_file_path)
